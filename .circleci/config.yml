@@ -1,0 +1,32 @@
+version: 2.1
+orbs:
+  gcp-cli: circleci/gcp-cli@2.1.0
+
+jobs:
+  deploy:
+    working_directory: ~/repo
+    docker:
+      - image: google/cloud-sdk:latest
+    steps:
+      - checkout
+      - gcp-cli/initialize
+      - run:
+          name: copy app.yaml
+          command: cp .gcloud/app.yaml app.yaml
+      - run:
+          name: copy .gcloudignore
+          command: cp .gcloud/.gcloudignore .gcloudignore
+      - run:
+          name: gcloud deploy
+          command: |
+            gcloud app deploy --quiet app.yaml
+          no_output_timeout: 20m
+
+workflows:
+  version: 2
+  "master pipeline":
+    jobs:
+      - deploy:
+          filters:
+            branches:
+              only: master
