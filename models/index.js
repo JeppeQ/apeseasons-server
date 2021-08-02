@@ -21,8 +21,21 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 // Tables
-db.example = require('./example.model.js')(sequelize, Sequelize);
+db.updateStatus = require('./updateStatus.model.js')(sequelize, Sequelize)
+db.token = require('./token.model.js')(sequelize, Sequelize)
+db.tournament = require('./tournament.model.js')(sequelize, Sequelize)
+db.player = require('./player.model.js')(sequelize, Sequelize)
+db.holding = require('./holding.model.js')(sequelize, Sequelize)
+db.trade = require('./trade.model.js')(sequelize, Sequelize)
 
 // Associations
+db.tournament.hasMany(db.player)
+db.player.belongsTo(db.tournament)
+
+db.player.hasMany(db.holding)
+db.player.hasMany(db.trade)
+
+db.holding.belongsTo(db.player)
+db.trade.belongsTo(db.player)
 
 module.exports = db;
