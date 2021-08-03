@@ -5,7 +5,7 @@ async function loadEnvironmentVariables() {
     return
   }
 
-  const projectNumber = ''
+  const projectNumber = '1072176833449'
   const secretsClient = new SecretManagerServiceClient()
 
   const secretNames = [

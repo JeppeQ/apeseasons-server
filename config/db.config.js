@@ -10,6 +10,6 @@ module.exports = {
       idle: 10000
     },
     dialectOptions: {
-      socketPath: ''
+      socketPath: '/cloudsql/apeseasons:europe-west3:apeseasons-prod'
     }
   };
