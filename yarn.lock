@@ -378,6 +378,13 @@
   dependencies:
     google-gax "^2.17.1"
 
+"@google-cloud/tasks@^2.3.6":
+  version "2.3.6"
+  resolved "https://registry.yarnpkg.com/@google-cloud/tasks/-/tasks-2.3.6.tgz#d87465edc7a5fdee1a3ffc987817114a13cfbc6a"
+  integrity sha512-iOBXSHLAXjI1T8PI/brVBSJX6OY8W7zY/VvSXQWK4dzNHpxR3nYVgo5p86mYJWeWBVI+niRg65MOtukphjNKeg==
+  dependencies:
+    google-gax "^2.17.1"
+
 "@graphql-typed-document-node/core@^3.0.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.1.0.tgz#0eee6373e11418bfe0b5638f654df7a4ca6a3950"
