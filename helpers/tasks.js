@@ -3,7 +3,7 @@ const client = new CloudTasksClient();
 
 module.exports = {
   createTask: async function (uri, queue, inSeconds, payload) {
-    const parent = client.queuePath('_PATH_', '_REGION_', queue);
+    const parent = client.queuePath('apeseasons', 'europe-west3', queue);
     const task = {
       appEngineHttpRequest: {
         httpMethod: 'POST',

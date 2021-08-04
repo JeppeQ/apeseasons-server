@@ -1,63 +1,32 @@
-const fetch = require('cross-fetch')
-const { ApolloClient, InMemoryCache, gql, HttpLink } = require("@apollo/client/core")
-const { utils } = require('ethers')
-
 const db = require("../models")
+const { Op } = require("sequelize")
+const { utils } = require('ethers')
 const polygonTokens = require('../whitelists/polygon.json')
 const { getMarket } = require('../providers/coingecko')
+const { fetchNewData } = require('../providers/thegraph')
 const { getTokens } = require('./tokenService')
 const { calculatePrize } = require('../helpers/utilities')
 const { getCurrentBlock } = require('./web3Service')
 
-const client = new ApolloClient({
-  link: new HttpLink({ uri: 'https://api.thegraph.com/subgraphs/id/QmW88bz4psLgGWhdRPTf6TbW58nQSrWsdhG5C7mAETCLUV', fetch }),
-  cache: new InMemoryCache()
-});
-
 updateAll = async () => {
-  await updateTokens()
   const tokens = await getTokens()
-  const currentBlock = await getCurrentBlock()
 
-  await fetchTournaments(tokens)
-  await fetchPlayers(tokens)
-  await fetchTrades(tokens)
-  await fetchPlayerRewards()
-  await updateTournaments(tokens, currentBlock)
+  const updateBlocks = await db.updateStatus.findAll({})
+  const data = await fetchNewData(updateBlocks)
+  if (!data) {
+    return
+  }
+
+  await addTournaments(data.tournaments, tokens)
+  await addPlayers(data.players, tokens)
+  await addTrades(data.trades, tokens)
+  await addPlayerRewards(data.playerRewards)
+  await updateTournaments(tokens)
 }
 
-getLastBlock = async (entity) => {
-  const status = await db.updateStatus.findOne({ where: { entity } })
-
-  let block = status ? status.block || 0 : 0
-
-  return block
-}
-
-fetchTournaments = async (tokens) => {
-  const block = await getLastBlock('tournament')
-
-  const query = await client.query({
-    query: gql`
-      query GetTournaments {
-        tournaments(where:{eventBlock_gt:${block}},orderBy:eventBlock) {
-          id
-          eventBlock
-          start
-          end
-          startBlock
-          endBlock
-          ticketPrice
-          ticketToken
-          playerCount
-          finalized
-        }
-      }
-    `
-  })
-
-  if (query && query.data && query.data.tournaments && query.data.tournaments.length > 0) {
-    const tournaments = query.data.tournaments.map(tourney => {
+addTournaments = async (tournaments, tokens) => {
+  if (tournaments.length > 0) {
+    const newTournaments = tournaments.map(tourney => {
 
       const tokenData = tokens.find(x => x.address.toUpperCase() === tourney.ticketToken.toUpperCase())
 
@@ -76,41 +45,22 @@ fetchTournaments = async (tokens) => {
       }
     })
 
-    await db.tournament.bulkCreate(tournaments, { ignoreDuplicates: true }).catch(ex => console.log(ex))
-    await db.updateStatus.upsert({ entity: 'tournament', block: tournaments[tournaments.length - 1].eventBlock })
+    await db.tournament.bulkCreate(newTournaments, { ignoreDuplicates: true }).catch(ex => console.log(ex))
+    await db.updateStatus.upsert({ entity: 'tournament', block: newTournaments[newTournaments.length - 1].eventBlock })
   }
 }
 
-fetchPlayers = async (tokens) => {
-  const block = await getLastBlock('player')
-
-  const query = await client.query({
-    query: gql`
-      query GetPlayers {
-        players(where:{eventBlock_gt:${block}},orderBy:eventBlock) {
-          id
-          eventBlock
-          address
-          tournament {
-            id
-          }
-          tokensBalances {
-            id
-            token
-            amount
-          }
-        }
-      }
-    `
-  }).catch(ex => console.log(ex))
-
-  if (query && query.data && query.data.players && query.data.players.length > 0) {
+addPlayers = async (players, tokens) => {
+  if (players.length > 0) {
 
     let holdings = []
 
-    const players = query.data.players.map(player => {
+    const newPlayers = players.map(player => {
+
       player.tokensBalances.map(token => {
+
         const tokenData = tokens.find(x => x.address.toUpperCase() === token.token.toUpperCase())
+
         holdings.push({
           playerId: player.id,
           tokenAddress: token.token,
@@ -128,39 +78,16 @@ fetchPlayers = async (tokens) => {
         eventBlock: player.eventBlock
       }
     })
-
+    await db.player.bulkCreate(newPlayers, { ignoreDuplicates: true }).catch(ex => console.log(ex))
     await db.holding.bulkCreate(holdings, { ignoreDuplicates: true }).catch(ex => console.log(ex))
-    await db.player.bulkCreate(players, { ignoreDuplicates: true }).catch(ex => console.log(ex))
-    await db.updateStatus.upsert({ entity: 'player', block: players[players.length - 1].eventBlock })
+    await db.updateStatus.upsert({ entity: 'player', block: newPlayers[newPlayers.length - 1].eventBlock })
   }
 }
 
-fetchTrades = async (tokens) => {
-  const block = await getLastBlock('trade')
+addTrades = async (trades, tokens) => {
+  if (trades.length > 0) {
 
-  const query = await client.query({
-    query: gql`
-      query GetTrades {
-        trades(where:{eventBlock_gt:${block}},orderBy:eventBlock) {
-          id
-          eventBlock
-          from
-          to
-          fromAmount
-          toAmount
-          time
-          player {
-            id
-          }
-        }
-      }
-    `
-  }).catch(ex => console.log(ex))
-
-  if (query && query.data && query.data.trades && query.data.trades.length > 0) {
-
-
-    const trades = query.data.trades.map(trade => {
+    const newTrades = trades.map(trade => {
 
       const fromTokenData = tokens.find(x => x.address.toUpperCase() === trade.from.toUpperCase())
       const toTokenData = tokens.find(x => x.address.toUpperCase() === trade.to.toUpperCase())
@@ -181,48 +108,27 @@ fetchTrades = async (tokens) => {
       }
     })
 
-    await updateHoldings(trades)
-    await db.trade.bulkCreate(trades, { ignoreDuplicates: true }).catch(ex => console.log(ex))
-    await db.updateStatus.upsert({ entity: 'trade', block: trades[trades.length - 1].eventBlock })
+    await updateHoldings(newTrades)
+    await db.trade.bulkCreate(newTrades, { ignoreDuplicates: true }).catch(ex => console.log(ex))
+    await db.updateStatus.upsert({ entity: 'trade', block: newTrades[newTrades.length - 1].eventBlock })
   }
 }
 
-fetchPlayerRewards = async () => {
-  const block = await getLastBlock('playerReward')
-
-  const query = await client.query({
-    query: gql`
-      query GetPlayerRewards {
-        playerRewards(where:{eventBlock_gt:${block}},orderBy:eventBlock) {
-          id
-          eventBlock
-          player {
-            id
-          }
-          tournament {
-            id
-          }
-        }
-      }
-    `
-  }).catch(ex => console.log(ex))
-
-  if (query && query.data && query.data.trades && query.data.trades.length > 0) {
-
-    const playerRewards = query.data.playerRewards.map(reward => {
+addPlayerRewards = async (playerRewards) => {
+  if (playerRewards.length > 0) {
+    const newPlayersRewarded = playerRewards.map(reward => {
 
       return {
         id: reward.player.id,
         tournamentId: reward.tournament.id,
         prizeStatus: 'claimed',
-        eventBlock: trade.eventBlock
+        eventBlock: reward.eventBlock
       }
     })
 
-    await db.player.bulkCreate(playerRewards, { updateOnDuplicate: ["prizeStatus"] })
-    await db.updateStatus.upsert({ entity: 'playerReward', block: playerRewards[playerRewards.length - 1].eventBlock })
+    await db.player.bulkCreate(newPlayersRewarded, { updateOnDuplicate: ["prizeStatus"] })
+    await db.updateStatus.upsert({ entity: 'playerReward', block: newPlayersRewarded[newPlayersRewarded.length - 1].eventBlock })
   }
-
 }
 
 updateHoldings = async (trades) => {
@@ -267,7 +173,8 @@ updateHoldings = async (trades) => {
   }))
 }
 
-updateTournaments = async (tokens, currentBlock) => {
+updateTournaments = async (tokens) => {
+  const currentBlock = await getCurrentBlock()
 
   const tournaments = await db.tournament.findAll({
     where: {
@@ -346,9 +253,6 @@ updateTokens = async (network = 'polygon') => {
     await db.token.bulkCreate(updatedTokens, { updateOnDuplicate: ["price"] })
   }
 }
-
-// updateTokens()
-updateAll()
 
 module.exports = {
   updateTokens,

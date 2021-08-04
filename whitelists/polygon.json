@@ -14,7 +14,7 @@
     "decimals": 18
   },
   {
-    "coingeckoId": "polygon",
+    "coingeckoId": "matic-network",
     "name": "Polygon",
     "symbol": "MATIC",
     "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
@@ -39,7 +39,7 @@
     "coingeckoId": "tron",
     "name": "Tron",
     "symbol": "TRX",
-    "address": "0xdc31ee1784292379fbb2964b3b9c4124d8f89c60",
+    "address": "0xdc31ee1784292379fbb2964b3b9c4124d8f19c60",
     "decimals": 18
   }
 ]

@@ -1,23 +1,25 @@
 const express = require('express')
 const router = express.Router()
-const { example } = require('../services/exampleService')
-const { exampleInterface } = require('../interfaces/exampleInterface')
+const { updateAll, updateTokens } = require('../services/updateService')
 
-router.get('/all', async (req, res) => {
-  const data = await example(res.locals.user.id)
-
-  const interface = exampleInterface(data)
-
-  res.send(interface)
+router.get('/tournaments', async (req, res) => {
+  try {
+    await updateAll()
+    res.send()
+  } catch (ex) {
+    console.log(ex)
+    res.status(500).send()
+  }
 })
 
-router.get('/:id', async (req, res) => {
-
-})
-
-router.get('/players', async (req, res) => {
-
-  
+router.get('/tokens', async (req, res) => {
+  try {
+    await updateTokens()
+    res.send()
+  } catch (ex) {
+    console.log(ex)
+    res.status(500).send()
+  }
 })
 
 module.exports = router
