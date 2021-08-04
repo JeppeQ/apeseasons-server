@@ -178,7 +178,7 @@ updateTournaments = async (tokens) => {
 
   const tournaments = await db.tournament.findAll({
     where: {
-      endBlock: { [Op.gt]: currentBlock }
+      endBlock: { [Op.gte]: currentBlock }
     },
     include: {
       model: db.player,
