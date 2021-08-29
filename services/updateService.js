@@ -5,7 +5,7 @@ const polygonTokens = require('../whitelists/polygon.json')
 const { getMarket } = require('../providers/coingecko')
 const { fetchNewData } = require('../providers/thegraph')
 const { getTokens } = require('./tokenService')
-const { calculatePrize } = require('../helpers/utilities')
+const { calculatePrize } = require('./prizeService')
 const { getCurrentBlock } = require('./web3Service')
 
 updateAll = async () => {
@@ -178,7 +178,7 @@ updateTournaments = async (tokens) => {
 
   const tournaments = await db.tournament.findAll({
     where: {
-      endBlock: { [Op.gt]: currentBlock }
+      endBlock: { [Op.gte]: currentBlock }
     },
     include: {
       model: db.player,
@@ -216,7 +216,7 @@ updateTournaments = async (tokens) => {
       return {
         ...player,
         rank: i + 1,
-        prize: calculatePrize(tournament.ticketPrice, prizePool, players.length, i + 1, tournament.prizeRefunds, tournament.prizeIndividual)
+        prize: calculatePrize(tournament.ticketPrice, prizePool, players.length, i, tournament.prizeStructure)
       }
     })
 

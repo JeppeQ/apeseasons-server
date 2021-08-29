@@ -12,8 +12,7 @@ module.exports = (sequelize, Sequelize) => {
     ticketPriceFloat: { type: Sequelize.DOUBLE },
     playerCount: { type: Sequelize.INTEGER },
     prizePool: { type: Sequelize.DOUBLE(18, 2) },
-    prizeRefunds: { type: Sequelize.INTEGER }, //Percentage of the prizepool that will go to refunds
-    prizeIndividual: { type: Sequelize.INTEGER } //Percentage of players that will qualify for individual prizes
+    prizeStructure: { type: Sequelize.STRING, defaultValue: 'STANDARD' } // STANDARD, etc
   });
 
   return Tournament;
