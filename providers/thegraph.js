@@ -2,7 +2,7 @@ const fetch = require('cross-fetch')
 const { ApolloClient, InMemoryCache, gql, HttpLink } = require("@apollo/client/core")
 
 const client = new ApolloClient({
-  link: new HttpLink({ uri: 'https://api.thegraph.com/subgraphs/id/QmYEWqjynWMBPMo81n4wZNEAgnUcg61VoDDiiuLN5kEiLK', fetch }),
+  link: new HttpLink({ uri: 'https://api.thegraph.com/subgraphs/id/Qmepot3BDwHzWmxznNuMRSQei6NhmJaDPdAranRsmD2xpj', fetch }),
   cache: new InMemoryCache()
 });
 
