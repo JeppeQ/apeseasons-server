@@ -10,36 +10,22 @@
     "coingeckoId": "ethereum",
     "name": "Ethereum",
     "symbol": "ETH",
-    "address": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+    "address": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
     "decimals": 18
   },
   {
     "coingeckoId": "matic-network",
     "name": "Polygon",
     "symbol": "MATIC",
-    "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
-    "decimals": 18
-  },
-  {
-    "coingeckoId": "aave",
-    "name": "Aave",
-    "symbol": "AAVE",
-    "address": "0xD6DF932A45C0f255f85145f286eA0b292B21C90B",
+    "address": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
     "decimals": 18
   },
   {
     "coingeckoId": "dai",
     "name": "Dai",
     "symbol": "DAI",
-    "address": "0xdc31ee1784292379fbb2964b3b9c4124d8f89c60",
+    "address": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
     "decimals": 18,
     "stablecoin": true
-  },
-  {
-    "coingeckoId": "tron",
-    "name": "Tron",
-    "symbol": "TRX",
-    "address": "0xdc31ee1784292379fbb2964b3b9c4124d8f19c60",
-    "decimals": 18
   }
 ]

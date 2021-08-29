@@ -1,11 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const { updateAll, updateTokens } = require('../services/updateService')
+const updateService = require('../services/updateService')
 const { createTask } = require('../helpers/tasks')
 
 router.post('/tournaments', async (req, res) => {
   try {
-    await updateAll()
+    await updateService.updateAll()
     await createTask('/api/update/tournaments', 'update-tournaments', 15)
     res.send()
   } catch (ex) {
@@ -16,7 +16,7 @@ router.post('/tournaments', async (req, res) => {
 
 router.post('/tokens', async (req, res) => {
   try {
-    await updateTokens()
+    await updateService.updateTokens()
     await createTask('/api/update/tokens', 'update-tokens', 15)
     res.send()
   } catch (ex) {
