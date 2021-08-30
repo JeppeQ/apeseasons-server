@@ -32,6 +32,7 @@ addTournaments = async (tournaments, tokens) => {
 
       return {
         id: tourney.id,
+        name: tourney.name,
         startBlock: tourney.startBlock,
         endBlock: tourney.endBlock,
         startTime: tourney.start,

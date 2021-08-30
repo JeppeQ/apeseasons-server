@@ -2,7 +2,7 @@ const fetch = require('cross-fetch')
 const { ApolloClient, InMemoryCache, gql, HttpLink } = require("@apollo/client/core")
 
 const client = new ApolloClient({
-  link: new HttpLink({ uri: 'https://api.thegraph.com/subgraphs/id/Qmepot3BDwHzWmxznNuMRSQei6NhmJaDPdAranRsmD2xpj', fetch }),
+  link: new HttpLink({ uri: 'https://api.thegraph.com/subgraphs/id/QmRrDChztqt6XpeYakpkE2RpKvLsKcsUWgqxSejsWvb41s', fetch }),
   cache: new InMemoryCache()
 });
 
@@ -19,6 +19,7 @@ fetchNewData = async (blocks) => {
 
         tournaments(where:{eventBlock_gt:${tournamentBlock}} orderBy:eventBlock) {
           id
+          name
           eventBlock
           start
           end
