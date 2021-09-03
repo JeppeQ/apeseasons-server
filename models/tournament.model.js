@@ -12,6 +12,7 @@ module.exports = (sequelize, Sequelize) => {
     ticketPriceFloat: { type: Sequelize.DOUBLE },
     playerCount: { type: Sequelize.INTEGER },
     prizePool: { type: Sequelize.DOUBLE(18, 2) },
+    placesPaid: { type: Sequelize.INTEGER },
     prizeStructure: { type: Sequelize.STRING, defaultValue: 'STANDARD' } // STANDARD, etc
   });
 

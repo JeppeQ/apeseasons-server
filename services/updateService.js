@@ -225,11 +225,12 @@ updateTournaments = async (tokens) => {
     tournamentQuery.push({
       id: tournament.id,
       playerCount: players.length,
-      prizePool: prizePool
+      prizePool: prizePool,
+      placesPaid: players.filter(p => p.prize > 0).length
     })
   })
 
-  await db.tournament.bulkCreate(tournamentQuery, { updateOnDuplicate: ["playerCount", "prizePool"] })
+  await db.tournament.bulkCreate(tournamentQuery, { updateOnDuplicate: ["playerCount", "prizePool", "placesPaid"] })
   await db.player.bulkCreate(playerQuery, { updateOnDuplicate: ["netWorth", "rank", "prize"] })
 }
 

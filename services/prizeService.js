@@ -16,14 +16,14 @@ standardPrize = (ticketPrice, prizePool, players, playerPos) => {
 
   const refundPool = prizePool / refund
   const individualPool = prizePool - refundPool
-  const playersToRefund = Math.floor(refundPool / ticketPrice)
+  let playersToRefund = Math.floor(refundPool / ticketPrice)
 
-  if (playersToRefund == 0) {
+  if (playersToRefund === 0) {
     playersToRefund = 1
   }
 
-  const individualWinners = Math.floor(players / individual)
-  if (individualWinners == 0) {
+  let individualWinners = Math.floor(players / individual)
+  if (individualWinners === 0) {
     individualWinners = 1
   }
 
