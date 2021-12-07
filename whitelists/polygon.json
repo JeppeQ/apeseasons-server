@@ -27,5 +27,26 @@
     "address": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
     "decimals": 18,
     "stablecoin": true
+  },
+  {
+    "coingeckoId": "chainlink",
+    "name": "Chainlink",
+    "symbol": "LINK",
+    "address": "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39",
+    "decimals": 18
+  },
+  {
+    "coingeckoId": "aave",
+    "name": "Aave",
+    "symbol": "AAVE",
+    "address": "0xd6df932a45c0f255f85145f286ea0b292b21c90b",
+    "decimals": 18
+  },
+  {
+    "coingeckoId": "curve-dao-token",
+    "name": "Curve",
+    "symbol": "CRV",
+    "address": "0x172370d5cd63279efa6d502dab29171933a610af",
+    "decimals": 18
   }
 ]
