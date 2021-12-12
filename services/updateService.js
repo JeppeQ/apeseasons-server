@@ -7,6 +7,7 @@ const { fetchNewData } = require('../providers/thegraph')
 const { getTokens } = require('./tokenService')
 const { calculatePrize } = require('./prizeService')
 const { getCurrentBlock } = require('./web3Service')
+const { DateTime } = require('luxon')
 
 updateAll = async () => {
   const tokens = await getTokens()
@@ -226,11 +227,17 @@ updateTournaments = async (tokens) => {
       id: tournament.id,
       playerCount: players.length,
       prizePool: prizePool,
-      placesPaid: players.filter(p => p.prize > 0).length
+      placesPaid: players.filter(p => p.prize > 0).length,
+      endTime: DateTime.now().plus({ seconds: (tournament.endBlock - currentBlock) * 2.1 })
     })
+
+    if (tournament.startBlock > currentBlock) {
+      tournamentQuery.startTime = DateTime.now().plus({ seconds: (tournament.startBlock - currentBlock) * 2.1 })
+    }
+
   })
 
-  await db.tournament.bulkCreate(tournamentQuery, { updateOnDuplicate: ["playerCount", "prizePool", "placesPaid"] })
+  await db.tournament.bulkCreate(tournamentQuery, { updateOnDuplicate: ["playerCount", "prizePool", "placesPaid", "startTime", "endTime"] })
   await db.player.bulkCreate(playerQuery, { updateOnDuplicate: ["netWorth", "rank", "prize"] })
 }
 
@@ -255,6 +262,8 @@ updateTokens = async (network = 'polygon') => {
     await db.token.bulkCreate(updatedTokens, { updateOnDuplicate: ["price"] })
   }
 }
+
+updateAll()
 
 module.exports = {
   updateTokens,
