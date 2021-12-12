@@ -228,13 +228,12 @@ updateTournaments = async (tokens) => {
       playerCount: players.length,
       prizePool: prizePool,
       placesPaid: players.filter(p => p.prize > 0).length,
-      endTime: DateTime.now().plus({ seconds: (tournament.endBlock - currentBlock) * 2.1 })
+      endTime: DateTime.utc() + ((tournament.endBlock - currentBlock) * 2.1)
     })
 
     if (tournament.startBlock > currentBlock) {
-      tournamentQuery.startTime = DateTime.now().plus({ seconds: (tournament.startBlock - currentBlock) * 2.1 })
+      tournamentQuery.startTime = DateTime.utc() + ((tournament.startBlock - currentBlock) * 2.1)
     }
-
   })
 
   await db.tournament.bulkCreate(tournamentQuery, { updateOnDuplicate: ["playerCount", "prizePool", "placesPaid", "startTime", "endTime"] })
@@ -262,8 +261,6 @@ updateTokens = async (network = 'polygon') => {
     await db.token.bulkCreate(updatedTokens, { updateOnDuplicate: ["price"] })
   }
 }
-
-updateAll()
 
 module.exports = {
   updateTokens,
