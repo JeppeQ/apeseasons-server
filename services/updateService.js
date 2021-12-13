@@ -228,11 +228,12 @@ updateTournaments = async (tokens) => {
       playerCount: players.length,
       prizePool: prizePool,
       placesPaid: players.filter(p => p.prize > 0).length,
-      endTime: DateTime.utc() + ((tournament.endBlock - currentBlock) * 2.1)
+      endTime: DateTime.utc().valueOf() + ((tournament.endBlock - currentBlock) * 2100),
+      startTime: tournament.startTime
     })
 
     if (tournament.startBlock > currentBlock) {
-      tournamentQuery.startTime = DateTime.utc() + ((tournament.startBlock - currentBlock) * 2.1)
+      tournamentQuery.startTime = DateTime.utc().valueOf() + ((tournament.startBlock - currentBlock) * 2100)
     }
   })
 
