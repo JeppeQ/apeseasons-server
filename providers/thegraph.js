@@ -11,7 +11,7 @@ fetchNewData = async (blocks) => {
   const playerBlock = getLastBlock(blocks, 'player')
   const tradeBlock = getLastBlock(blocks, 'trade')
   const playerRewardBlock = getLastBlock(blocks, 'playerReward')
-
+  console.log(playerBlock, typeof(playerBlock))
   try {
     const query = await client.query({
       query: gql`
@@ -45,7 +45,7 @@ fetchNewData = async (blocks) => {
           }
         }
 
-        trades(where:{eventBlock_gt:${tradeBlock}},orderBy:eventBlock) {
+        trades(where:{eventBlock_gt:${tradeBlock}} orderBy:eventBlock) {
           id
           eventBlock
           from
@@ -58,7 +58,7 @@ fetchNewData = async (blocks) => {
           }
         }
         
-        playerRewards(where:{eventBlock_gt:${playerRewardBlock}},orderBy:eventBlock) {
+        playerRewards(where:{eventBlock_gt:${playerRewardBlock}} orderBy:eventBlock) {
           id
           eventBlock
           player {

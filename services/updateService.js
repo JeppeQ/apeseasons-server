@@ -266,8 +266,6 @@ updateTokens = async (network = 'polygon') => {
   }
 }
 
-updateAll()
-
 module.exports = {
   updateTokens,
   updateAll
