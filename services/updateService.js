@@ -99,13 +99,15 @@ addTrades = async (trades, tokens) => {
         playerId: trade.player.id,
         from: fromTokenData.symbol,
         to: toTokenData.symbol,
-        amountFrom: Number(utils.formatUnits(trade.amountFrom, fromTokenData.decimals)),
-        amountTo: Number(utils.formatUnits(trade.amountTo, toTokenData.decimals)),
-        timestamp: token.time,
+        fromName: fromTokenData.name,
+        toName: fromTokenData.name,
+        fromAmount: Number(utils.formatUnits(trade.fromAmount, fromTokenData.decimals)),
+        toAmount: Number(utils.formatUnits(trade.toAmount, toTokenData.decimals)),
+        timestamp: trade.time,
         fromAddress: trade.from,
         toAddress: trade.to,
-        amountFromRaw: trade.amountFrom,
-        amountToRaw: trade.amountTo,
+        fromAmountRaw: trade.fromAmount,
+        toAmountRaw: trade.toAmount,
         eventBlock: trade.eventBlock
       }
     })
@@ -143,8 +145,8 @@ updateHoldings = async (trades) => {
       }
     })
 
-    fromHolding.amount = BigInt(fromHolding.amount - trade.amountFromRaw)
-    fromHolding.amountFloat -= trade.amountFrom
+    fromHolding.amount = BigInt(fromHolding.amount - trade.fromAmount)
+    fromHolding.amountFloat -= trade.fromAmount
     await fromHolding.save()
 
     const toHolding = await db.holding.findOne({
@@ -156,18 +158,19 @@ updateHoldings = async (trades) => {
 
     if (toHolding) {
 
-      toHolding.amount = BigInt(toHolding.amount + trade.amountToRaw)
-      toHolding.amountFloat += trade.amountTo
+      toHolding.amount = BigInt(toHolding.amount + trade.toAmountRaw)
+      toHolding.amountFloat += trade.toAmount
       await toHolding.save()
 
     } else {
 
-      await db.holding.insert({
+      await db.holding.create({
         playerId: trade.playerId,
         tokenAddress: trade.toAddress,
+        tokenName: trade.toName,
         tokenSymbol: trade.to,
-        amount: trade.amountToRaw,
-        amountFloat: trade.amountTo
+        amount: trade.toAmountRaw,
+        amountFloat: trade.toAmount
       })
 
     }
@@ -262,6 +265,8 @@ updateTokens = async (network = 'polygon') => {
     await db.token.bulkCreate(updatedTokens, { updateOnDuplicate: ["price"] })
   }
 }
+
+updateAll()
 
 module.exports = {
   updateTokens,
