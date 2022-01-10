@@ -15,6 +15,11 @@ getUpcomingTournaments = async (address) => {
       }
     }, {
       model: db.holding,
+      where: {
+        amountFloat: {
+          [Op.gt]: 0
+        }
+      }
     }]
   })
 
@@ -34,7 +39,12 @@ getRunningTournaments = async (address) => {
         endTime: { [Op.gt]: BigInt(DateTime.utc()) }
       }
     }, {
-      model: db.holding
+      model: db.holding,
+      where: {
+        amountFloat: {
+          [Op.gt]: 0
+        }
+      }
     }]
   })
 
@@ -53,7 +63,12 @@ getCompletedTournaments = async (address) => {
         endTime: { [Op.lt]: BigInt(DateTime.utc()) }
       }
     }, {
-      model: db.holding
+      model: db.holding,
+      where: {
+        amountFloat: {
+          [Op.gt]: 0
+        }
+      }
     }]
   })
 

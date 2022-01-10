@@ -145,7 +145,7 @@ updateHoldings = async (trades) => {
       }
     })
 
-    fromHolding.amount = BigInt(fromHolding.amount - trade.fromAmount)
+    fromHolding.amount = BigInt(fromHolding.amount - trade.fromAmountRaw)
     fromHolding.amountFloat -= trade.fromAmount
     await fromHolding.save()
 
