@@ -11,7 +11,7 @@ getUpcomingTournaments = async (address) => {
       model: db.tournament,
       required: true,
       where: {
-        startTime: { [Op.gt]: BigInt(DateTime.utc()) }
+        startTime: { [Op.gt]: DateTime.utc().valueOf() }
       }
     }, {
       model: db.holding,
@@ -35,8 +35,8 @@ getRunningTournaments = async (address) => {
       model: db.tournament,
       required: true,
       where: {
-        startTime: { [Op.lt]: BigInt(DateTime.utc()) },
-        endTime: { [Op.gt]: BigInt(DateTime.utc()) }
+        startTime: { [Op.lt]: DateTime.utc().valueOf() },
+        endTime: { [Op.gt]: DateTime.utc().valueOf() }
       }
     }, {
       model: db.holding,
@@ -60,7 +60,7 @@ getCompletedTournaments = async (address) => {
       model: db.tournament,
       required: true,
       where: {
-        endTime: { [Op.lt]: BigInt(DateTime.utc()) }
+        endTime: { [Op.lt]: DateTime.utc().valueOf() }
       }
     }, {
       model: db.holding,

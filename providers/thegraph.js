@@ -11,7 +11,7 @@ fetchNewData = async (blocks) => {
   const playerBlock = getLastBlock(blocks, 'player')
   const tradeBlock = getLastBlock(blocks, 'trade')
   const playerRewardBlock = getLastBlock(blocks, 'playerReward')
-  console.log(playerBlock, typeof(playerBlock))
+
   try {
     const query = await client.query({
       query: gql`

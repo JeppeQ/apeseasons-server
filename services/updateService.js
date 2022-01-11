@@ -14,14 +14,13 @@ updateAll = async () => {
 
   const updateBlocks = await db.updateStatus.findAll({})
   const data = await fetchNewData(updateBlocks)
-  if (!data) {
-    return
+  if (data) { 
+    await addTournaments(data.tournaments, tokens)
+    await addPlayers(data.players, tokens)
+    await addTrades(data.trades, tokens)
+    await addPlayerRewards(data.playerRewards)
   }
-
-  await addTournaments(data.tournaments, tokens)
-  await addPlayers(data.players, tokens)
-  await addTrades(data.trades, tokens)
-  await addPlayerRewards(data.playerRewards)
+  
   await updateTournaments(tokens)
 }
 
@@ -265,6 +264,8 @@ updateTokens = async (network = 'polygon') => {
     await db.token.bulkCreate(updatedTokens, { updateOnDuplicate: ["price"] })
   }
 }
+
+updateAll()
 
 module.exports = {
   updateTokens,

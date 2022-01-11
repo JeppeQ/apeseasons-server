@@ -5,7 +5,7 @@ const { DateTime } = require('luxon')
 getUpcoming = async () => {
   const tournaments = await db.tournament.findAll({
     where: {
-      startTime: { [Op.gt]: BigInt(DateTime.utc()) }
+      startTime: { [Op.gt]: DateTime.utc().valueOf() }
     }
   })
 
@@ -15,8 +15,8 @@ getUpcoming = async () => {
 getRunning = async () => {
   const tournaments = await db.tournament.findAll({
     where: {
-      startTime: { [Op.lt]: BigInt(DateTime.utc()) },
-      endTime: { [Op.gt]: BigInt(DateTime.utc()) }
+      startTime: { [Op.lt]: DateTime.utc().valueOf() },
+      endTime: { [Op.gt]: DateTime.utc().valueOf() }
     }
   })
   
