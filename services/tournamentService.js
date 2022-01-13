@@ -19,7 +19,7 @@ getRunning = async () => {
       endTime: { [Op.gt]: DateTime.utc().valueOf() }
     }
   })
-  
+
   return tournaments
 }
 
@@ -28,7 +28,16 @@ getPlayers = async (tournamentId) => {
     where: {
       tournamentId
     },
-    raw: true
+    include: [{
+      model: db.holding,
+      where: {
+        amountFloat: {
+          [Op.gt]: 0
+        }
+      }
+    }, {
+      model: db.trade,
+    }]
   })
 }
 

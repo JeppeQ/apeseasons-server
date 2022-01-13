@@ -14,6 +14,7 @@ updateAll = async () => {
 
   const updateBlocks = await db.updateStatus.findAll({})
   const data = await fetchNewData(updateBlocks)
+
   if (data) { 
     await addTournaments(data.tournaments, tokens)
     await addPlayers(data.players, tokens)
@@ -99,7 +100,7 @@ addTrades = async (trades, tokens) => {
         from: fromTokenData.symbol,
         to: toTokenData.symbol,
         fromName: fromTokenData.name,
-        toName: fromTokenData.name,
+        toName: toTokenData.name,
         fromAmount: Number(utils.formatUnits(trade.fromAmount, fromTokenData.decimals)),
         toAmount: Number(utils.formatUnits(trade.toAmount, toTokenData.decimals)),
         timestamp: trade.time,
@@ -144,7 +145,7 @@ updateHoldings = async (trades) => {
       }
     })
 
-    fromHolding.amount = BigInt(fromHolding.amount - trade.fromAmountRaw)
+    fromHolding.amount = BigInt(fromHolding.amount) - BigInt(trade.fromAmountRaw)
     fromHolding.amountFloat -= trade.fromAmount
     await fromHolding.save()
 
@@ -157,7 +158,7 @@ updateHoldings = async (trades) => {
 
     if (toHolding) {
 
-      toHolding.amount = BigInt(toHolding.amount + trade.toAmountRaw)
+      toHolding.amount = BigInt(toHolding.amount) + BigInt(trade.toAmountRaw)
       toHolding.amountFloat += trade.toAmount
       await toHolding.save()
 

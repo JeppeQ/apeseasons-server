@@ -4,8 +4,8 @@ module.exports = (sequelize, Sequelize) => {
     playerId: { type: Sequelize.STRING },
     from: { type: Sequelize.STRING },
     to: { type: Sequelize.STRING },
-    amountFrom: { type: Sequelize.DOUBLE },
-    amountTo: { type: Sequelize.DOUBLE },
+    fromAmount: { type: Sequelize.DOUBLE },
+    toAmount: { type: Sequelize.DOUBLE },
     timestamp: { type: Sequelize.STRING }
   });
 
