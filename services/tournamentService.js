@@ -28,6 +28,7 @@ getPlayers = async (tournamentId) => {
     where: {
       tournamentId
     },
+    order: [['rank', 'ASC']],
     include: [{
       model: db.holding,
       where: {
