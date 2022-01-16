@@ -258,11 +258,12 @@ updateTokens = async (network = 'polygon') => {
       return {
         ...token,
         network,
-        price: tokenData ? tokenData.current_price : token.price
+        price: tokenData ? tokenData.current_price : token.price,
+        priceChangeDay: tokenData.price_change_percentage_24h_in_currency
       }
     })
 
-    await db.token.bulkCreate(updatedTokens, { updateOnDuplicate: ["price"] })
+    await db.token.bulkCreate(updatedTokens, { updateOnDuplicate: ["price", "priceChangeDay"] })
   }
 }
 

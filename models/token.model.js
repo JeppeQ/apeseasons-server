@@ -6,7 +6,8 @@ module.exports = (sequelize, Sequelize) => {
     symbol: { type: Sequelize.STRING },
     name: { type: Sequelize.STRING },
     price: { type: Sequelize.DOUBLE },
-    decimals: { type: Sequelize.INTEGER }
+    decimals: { type: Sequelize.INTEGER },
+    priceChangeDay: { type: Sequelize.FLOAT(6, 1) }
   });
 
   return Tokens;
