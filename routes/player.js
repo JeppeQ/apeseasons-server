@@ -26,4 +26,12 @@ router.get('/tournaments/completed', async (req, res) => {
   res.send(tournaments)
 })
 
+router.get('/participant', async (req, res) => {
+  const { address, tournamentId } = req.query
+
+  const player = await playerService.isParticipant(address, tournamentId)
+
+  res.send(player)
+})
+
 module.exports = router

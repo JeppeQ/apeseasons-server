@@ -75,8 +75,20 @@ getCompletedTournaments = async (address) => {
   return tournaments
 }
 
+isParticipant = async (address, tournamentId) => {
+  const player = await db.player.findOne({
+    where: {
+      address,
+      tournamentId
+    }
+  })
+
+  return Boolean(player)
+}
+
 module.exports = {
   getUpcomingTournaments,
   getRunningTournaments,
-  getCompletedTournaments
+  getCompletedTournaments,
+  isParticipant
 }
