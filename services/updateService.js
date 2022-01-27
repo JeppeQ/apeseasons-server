@@ -43,11 +43,12 @@ addTournaments = async (tournaments, tokens) => {
         ticketPrice: tourney.ticketPrice,
         ticketPriceFloat: Number(utils.formatUnits(tourney.ticketPrice, tokenData.decimals)),
         playerCount: tourney.playerCount,
-        eventBlock: tourney.eventBlock
+        eventBlock: tourney.eventBlock,
+        finalized: tourney.finalized
       }
     })
 
-    await db.tournament.bulkCreate(newTournaments, { ignoreDuplicates: true }).catch(ex => console.log(ex))
+    await db.tournament.bulkCreate(newTournaments, { updateOnDuplicate: ["finalized", "playerCount"] }).catch(ex => console.log(ex))
     await db.updateStatus.upsert({ entity: 'tournament', block: newTournaments[newTournaments.length - 1].eventBlock })
   }
 }

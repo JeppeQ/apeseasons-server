@@ -13,7 +13,8 @@ module.exports = (sequelize, Sequelize) => {
     playerCount: { type: Sequelize.INTEGER },
     prizePool: { type: Sequelize.DOUBLE(18, 2) },
     placesPaid: { type: Sequelize.INTEGER },
-    prizeStructure: { type: Sequelize.STRING, defaultValue: 'STANDARD' } // STANDARD, etc
+    prizeStructure: { type: Sequelize.STRING, defaultValue: 'STANDARD' }, // STANDARD, etc
+    finalized: { type: Sequelize.BOOLEAN, defaultValue: false }
   });
 
   return Tournament;
