@@ -127,11 +127,12 @@ addPlayerRewards = async (playerRewards) => {
         id: reward.player.id,
         tournamentId: reward.tournament.id,
         prizeStatus: 'claimed',
+        rewardAmount: reward.amount,
         eventBlock: reward.eventBlock
       }
     })
 
-    await db.player.bulkCreate(newPlayersRewarded, { updateOnDuplicate: ["prizeStatus"] })
+    await db.player.bulkCreate(newPlayersRewarded, { updateOnDuplicate: ["prizeStatus", "rewardAmount"] })
     await db.updateStatus.upsert({ entity: 'playerReward', block: newPlayersRewarded[newPlayersRewarded.length - 1].eventBlock })
   }
 }
@@ -145,6 +146,10 @@ updateHoldings = async (trades) => {
         tokenAddress: trade.fromAddress
       }
     })
+
+    if (!fromHolding) {
+      return
+    }
 
     fromHolding.amount = BigInt(fromHolding.amount) - BigInt(trade.fromAmountRaw)
     fromHolding.amountFloat -= trade.fromAmount

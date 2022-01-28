@@ -6,7 +6,8 @@ module.exports = (sequelize, Sequelize) => {
     netWorth: { type: Sequelize.DOUBLE(18, 2) },
     rank: { type: Sequelize.INTEGER },
     prize: { type: Sequelize.DOUBLE(18, 2) },
-    prizeStatus: { type: Sequelize.STRING, defaultValue: 'unclaimed' }
+    prizeStatus: { type: Sequelize.STRING, defaultValue: 'unclaimed' },
+    rewardAmount: { type: Sequelize.BIGINT },
   });
 
   return Player;

@@ -13,7 +13,7 @@ const defaultOptions = {
 }
 
 const client = new ApolloClient({
-  link: new HttpLink({ uri: 'https://api.thegraph.com/subgraphs/id/QmQmpdsjPVYsVXyqD1jxM2UVnjiirwEbobzQqJJY1Bh8rb', fetch }),
+  link: new HttpLink({ uri: 'https://api.thegraph.com/subgraphs/id/QmTAnstnGJKr7a1kME49ZkcgSgCQSAVjUwFhbncW2md4nu', fetch }),
   cache: new InMemoryCache(),
   defaultOptions: defaultOptions
 });
@@ -73,6 +73,7 @@ fetchNewData = async (blocks) => {
         playerRewards(where:{eventBlock_gt:${playerRewardBlock}} orderBy:eventBlock) {
           id
           eventBlock
+          amount
           player {
             id
           }
@@ -85,7 +86,7 @@ fetchNewData = async (blocks) => {
     })
 
     return query.data
-  } catch (ex) { 
+  } catch (ex) {
     console.log(ex)
   }
 }
