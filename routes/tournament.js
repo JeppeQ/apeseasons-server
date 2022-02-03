@@ -1,4 +1,5 @@
 const express = require('express')
+const { playerInterface } = require('../interfaces/tournamentInterface')
 const router = express.Router()
 const { getUpcoming, getRunning, getPlayers } = require('../services/tournamentService')
 
@@ -19,7 +20,8 @@ router.get('/players', async (req, res) => {
 
   const players = await getPlayers(tournamentId)
 
-  res.send(players)
+  const interface = playerInterface(players)
+  res.send(interface)
 })
 
 module.exports = router
