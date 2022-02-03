@@ -2,7 +2,7 @@ getSignificantDecimals = (number) => {
   const _str = String(number)
   const first = _str.split("").findIndex(x => x !== '0' && x !== '.')
 
-  return Math.min(5, first + 2)
+  return Math.max(5, first + 2)
 }
 
 roundNumber = (x) => {
