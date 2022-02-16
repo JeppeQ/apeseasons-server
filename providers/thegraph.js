@@ -13,7 +13,7 @@ const defaultOptions = {
 }
 
 const client = new ApolloClient({
-  link: new HttpLink({ uri: 'https://api.thegraph.com/subgraphs/id/QmNQtf5gHvX5CdeYh2BTsbTFfEJ8KNkmW8anCpFordzacC', fetch }),
+  link: new HttpLink({ uri: 'https://api.thegraph.com/subgraphs/id/QmbkY2Yqq5cNSHq2jwkKxnfQXhtRckb3hckyfPzR86oDiK', fetch }),
   cache: new InMemoryCache(),
   defaultOptions: defaultOptions
 });
