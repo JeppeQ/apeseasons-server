@@ -6,7 +6,7 @@ const { getMarket } = require('../providers/coingecko')
 const { fetchNewData } = require('../providers/thegraph')
 const { getTokens } = require('./tokenService')
 const { calculatePrize } = require('./prizeService')
-const { getCurrentBlock } = require('./web3Service')
+const { getCurrentBlock, finalizeTournament } = require('./web3Service')
 const { DateTime } = require('luxon')
 
 updateAll = async () => {
@@ -31,7 +31,7 @@ addTournaments = async (tournaments, tokens) => {
 
       const tokenData = tokens.find(x => x.address.toUpperCase() === tourney.ticketToken.toUpperCase())
 
-      return {
+      let data =  {
         id: tourney.id,
         name: tourney.name,
         startBlock: tourney.startBlock,
@@ -43,12 +43,13 @@ addTournaments = async (tournaments, tokens) => {
         ticketPrice: tourney.ticketPrice,
         ticketPriceFloat: Number(utils.formatUnits(tourney.ticketPrice, tokenData.decimals)),
         playerCount: tourney.playerCount,
-        eventBlock: tourney.eventBlock,
-        finalized: tourney.finalized
+        eventBlock: tourney.eventBlock
       }
+
+      return data
     })
 
-    await db.tournament.bulkCreate(newTournaments, { updateOnDuplicate: ["finalized", "playerCount"] }).catch(ex => console.log(ex))
+    await db.tournament.bulkCreate(newTournaments, { updateOnDuplicate: ["playerCount"] }).catch(ex => console.log(ex))
     await db.updateStatus.upsert({ entity: 'tournament', block: newTournaments[newTournaments.length - 1].eventBlock })
   }
 }
@@ -273,7 +274,26 @@ updateTokens = async (network = 'polygon') => {
   }
 }
 
+finalizeTournaments = async (network = 'polygon') => {
+  const currentBlock = await getCurrentBlock()
+
+  const tournament = await db.tournament.findOne({
+    where: {
+      endBlock: { [Op.lt]: currentBlock },
+      finalized: false
+    },
+    include: {
+      model: db.player,
+    },
+  })
+
+  if (tournament) {
+    await finalizeTournament(tournament.id)
+  }
+}
+
 module.exports = {
   updateTokens,
-  updateAll
+  updateAll,
+  finalizeTournaments
 }

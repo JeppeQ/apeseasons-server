@@ -9,7 +9,8 @@ async function loadEnvironmentVariables() {
   const secretsClient = new SecretManagerServiceClient()
 
   const secretNames = [
-    'DB_PASSWORD'
+    'DB_PASSWORD',
+    'GAMEMASTER_KEY'
   ]
 
   await loadSecrets(secretsClient, projectNumber, secretNames)

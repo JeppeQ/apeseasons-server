@@ -25,4 +25,15 @@ router.post('/tokens', async (req, res) => {
   }
 })
 
+router.post('/finalize', async (req, res) => {
+  try {
+    await updateService.finalizeTournaments()
+    await createTask('/api/update/finalize', 'finalize-tournaments', 15)
+    res.send()
+  } catch (ex) {
+    console.log(ex)
+    res.status(500).send()
+  }
+})
+
 module.exports = router

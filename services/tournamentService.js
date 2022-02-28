@@ -42,8 +42,27 @@ getPlayers = async (tournamentId) => {
   })
 }
 
+finalizeStandings = async (address, sortedPlayers) => {
+  const tournament = await db.tournament.findByPk(address)
+
+  const players = sortedPlayers.map((p, i) => {
+    return {
+      id: address + p[0],
+      netWorth: p[1],
+      rank: i + 1,
+      prize: calculatePrize(tournament.ticketPrice, tournament.prizePool, sortedPlayers.length, i, tournament.prizeStructure)
+    }
+  })
+
+  await db.player.bulkCreate(players, { updateOnDuplicate: ["netWorth", "rank", "prize"] })
+
+  tournament.finalized = true
+  await tournament.save()
+}
+
 module.exports = {
   getUpcoming,
   getRunning,
-  getPlayers
+  getPlayers,
+  finalizeStandings
 }
