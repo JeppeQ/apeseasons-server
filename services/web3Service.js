@@ -7,7 +7,7 @@ const whitelistedTokens = polygonTokens.map(token => token.address)
 
 const infuraId = 'f80d51814eef48c3b911ed0f0b52507c'
 const provider = new ethers.providers.InfuraProvider("matic", infuraId)
-const gasOptions = { gasLimit: 10000000, gasPrice: BigInt(10 ** 12), nonce: 45, value: 0 }
+const gasOptions = { gasLimit: 10000000, gasPrice: BigInt(10 ** 11), nonce: 45, value: 0 }
 
 const getCurrentBlock = async () => {
   const block = await provider.getBlockNumber()
