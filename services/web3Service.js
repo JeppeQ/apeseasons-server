@@ -1,5 +1,6 @@
 const { ethers } = require('ethers')
 const tournamentContract = require("../contracts/tournament.json")
+const erc20Contract = require("../contracts/erc20.json")
 
 const polygonTokens = require('../whitelists/polygon.json')
 const { finalizeStandings } = require('./tournamentService')
@@ -7,7 +8,7 @@ const whitelistedTokens = polygonTokens.map(token => token.address)
 
 const infuraId = 'f80d51814eef48c3b911ed0f0b52507c'
 const provider = new ethers.providers.InfuraProvider("matic", infuraId)
-const gasOptions = { gasLimit: 10000000, gasPrice: BigInt(10 ** 11), nonce: 45, value: 0 }
+const gasOptions = { gasLimit: 10000000, gasPrice: BigInt(10 ** 11), value: 0 }
 
 const getCurrentBlock = async () => {
   const block = await provider.getBlockNumber()
@@ -15,14 +16,19 @@ const getCurrentBlock = async () => {
   return block
 }
 
-const finalizeTournament = async (address) => {
-  const wallet = new ethers.Wallet(process.env.GAMEMASTER_KEY, provider);
-  const contract = new ethers.Contract(address, tournamentContract.abi, wallet);
+const finalizeTournament = async (tournament) => {
+  try {
+    const wallet = new ethers.Wallet(process.env.GAMEMASTER_KEY, provider);
+    const contract = new ethers.Contract(tournament.id, tournamentContract.abi, wallet);
 
-  const liquidateTx = await liquidateTournament(address, contract);
+    const liquidateTx = await liquidateTournament(tournament.id, contract);
 
-  if (liquidateTx) {
-    await score(address, contract);
+    if (liquidateTx) {
+      await score(tournament, contract);
+    }
+  } catch (ex) {
+    tournament.finalized = 'FAILED'
+    tournament.save()
   }
 
 }
@@ -31,7 +37,7 @@ const liquidateTournament = async (address, contract) => {
   const isLiquidated = await contract.isLiquidated();
 
   if (isLiquidated) {
-    return;
+    return true;
   }
 
   //1. Get a list of whitelisted tokens owned by tournament contract:
@@ -39,9 +45,9 @@ const liquidateTournament = async (address, contract) => {
   for (const tokenAddress of whitelistedTokens) {
     console.log("Fetching token at:", tokenAddress)
 
-    token = await ethers.getContractAt("IERC20", tokenAddress);
+    const tokenContract = new ethers.Contract(tokenAddress, erc20Contract.abi, provider);
 
-    const amountOwned = await token.balanceOf(address);
+    const amountOwned = await tokenContract.balanceOf(address);
 
     console.log("Token balance:", amountOwned);
 
@@ -61,24 +67,23 @@ const liquidateTournament = async (address, contract) => {
   return liquidationTx.wait()
 }
 
-async function score(contract, address) {
+async function score(tournament, contract) {
   console.log("Entering scoring function")
-
-  //1. Get players
-  const tradeFilter = contract.filters.BuyTicket()
-  const events = await contract.queryFilter(tradeFilter);
 
   var playerScores = []
   var playerTokens = {}
-  for (const e of events) {
-    const player = e.args[0]
-    playerTokens[player] = [await contract.ticketToken()]
+  for (const p of tournament.players) {
+    const player = p.address
+    playerTokens[player] = []
+
     for (const tokenAddress of whitelistedTokens) {
       const balance = await contract.getBalance(player, tokenAddress)
+
       if (balance.gt(0)) {
         playerTokens[player].push(tokenAddress)
       }
     }
+
     playerScores.push([player, await contract.calculateScore(player, playerTokens[player])])
   }
 
@@ -88,9 +93,9 @@ async function score(contract, address) {
   //2. Sort players by liquidated value
   playerScores.sort(function (a, b) {
     if (a[1].gt(b[1])) {
-      return 1
-    } else {
       return -1
+    } else {
+      return 1
     }
   })
 
@@ -105,7 +110,7 @@ async function score(contract, address) {
   const receipt = await scoreTx.wait()
 
   if (receipt) {
-    finalizeStandings(address, playerScores)
+    finalizeStandings(tournament, playerScores)
   }
 }
 

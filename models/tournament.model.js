@@ -14,7 +14,7 @@ module.exports = (sequelize, Sequelize) => {
     prizePool: { type: Sequelize.DOUBLE(18, 2) },
     placesPaid: { type: Sequelize.INTEGER },
     prizeStructure: { type: Sequelize.STRING, defaultValue: 'STANDARD' }, // STANDARD, etc
-    finalized: { type: Sequelize.BOOLEAN, defaultValue: false }
+    finalized: { type: Sequelize.STRING, defaultValue: 'PENDING' } // PENDING, FAILED, COMPLETED
   });
 
   return Tournament;

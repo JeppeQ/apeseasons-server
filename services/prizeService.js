@@ -10,6 +10,7 @@ standardPrize = (ticketPrice, prizePool, players, playerPos) => {
   const refund = 2
   const individual = 5
 
+  console.log(ticketPrice, prizePool, players, playerPos)
   if (players === 1) {
     return prizePool
   }

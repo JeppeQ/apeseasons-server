@@ -1,6 +1,9 @@
 const db = require("../models")
 const { Op } = require("sequelize")
 const { DateTime } = require('luxon')
+const polygonTokens = require('../whitelists/polygon.json')
+const { utils } = require("ethers")
+const { calculatePrize } = require("./prizeService")
 
 getUpcoming = async () => {
   const tournaments = await db.tournament.findAll({
@@ -42,13 +45,13 @@ getPlayers = async (tournamentId) => {
   })
 }
 
-finalizeStandings = async (address, sortedPlayers) => {
-  const tournament = await db.tournament.findByPk(address)
+finalizeStandings = async (tournament, sortedPlayers) => {
+  const ticketToken = polygonTokens.find(t => t.address.toUpperCase() === tournament.ticketToken.toUpperCase())
 
   const players = sortedPlayers.map((p, i) => {
     return {
-      id: address + p[0],
-      netWorth: p[1],
+      id: tournament.id + p[0],
+      netWorth: Number(utils.formatUnits(p[1], ticketToken.decimals)),
       rank: i + 1,
       prize: calculatePrize(tournament.ticketPrice, tournament.prizePool, sortedPlayers.length, i, tournament.prizeStructure)
     }
@@ -56,7 +59,7 @@ finalizeStandings = async (address, sortedPlayers) => {
 
   await db.player.bulkCreate(players, { updateOnDuplicate: ["netWorth", "rank", "prize"] })
 
-  tournament.finalized = true
+  tournament.finalized = 'COMPLETED'
   await tournament.save()
 }
 

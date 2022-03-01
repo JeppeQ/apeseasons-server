@@ -280,7 +280,7 @@ finalizeTournaments = async (network = 'polygon') => {
   const tournament = await db.tournament.findOne({
     where: {
       endBlock: { [Op.lt]: currentBlock },
-      finalized: false
+      finalized: 'PENDING'
     },
     include: {
       model: db.player,
@@ -288,9 +288,11 @@ finalizeTournaments = async (network = 'polygon') => {
   })
 
   if (tournament) {
-    await finalizeTournament(tournament.id)
+    await finalizeTournament(tournament)
   }
 }
+
+finalizeTournaments()
 
 module.exports = {
   updateTokens,
